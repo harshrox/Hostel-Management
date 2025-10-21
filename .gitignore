@@ -11,6 +11,9 @@ __pycache__/
 **/ENV/
 *.env
 
+# Certificates
+**/certs/
+
 # Django
 *.log
 *.pot

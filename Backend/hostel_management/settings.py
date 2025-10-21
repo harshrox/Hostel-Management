@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -37,7 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'accounts',
+    'rooms',
+    'complaints',
+    'leaves',
+    'records',
 ]
+
+# Use the custom User model
+AUTH_USER_MODEL = 'accounts.User'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,12 +84,20 @@ WSGI_APPLICATION = 'hostel_management.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': env('DB_ENGINE'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASS'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
+        'OPTIONS': {
+            'ssl': {'ca': env('DB_SSL_CA')},
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 

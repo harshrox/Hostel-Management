@@ -5,7 +5,7 @@
 __pycache__/
 *.sqlite3
 
-# Virtual environments (anywhere in the project)
+# Virtual environments
 **/venv/
 **/env/
 **/ENV/

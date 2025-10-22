@@ -14,8 +14,22 @@ class Room(models.Model):
     def __str__(self):
         return f"{self.number} ({self.room_type})"
 
+    @property
+    def allocated_count(self):
+        """Number of students currently allocated to this room."""
+        return self.allocation_set.filter(end_date__isnull=True).count()
+
+    @property
+    def is_allocated(self):
+        """Returns True if room is full, False otherwise."""
+        return self.allocated_count >= self.capacity
+
 class Allocation(models.Model):
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, limit_choices_to={'role': 'STUDENT'}, on_delete=models.CASCADE)
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        limit_choices_to={'role': 'STUDENT'},
+        on_delete=models.CASCADE
+    )
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)

@@ -1,16 +1,16 @@
 from rest_framework import viewsets, generics
 from .models import User
 from .serializers import UserSerializer
-from .permissions import IsAdminRole
+from .permissions import IsWardenRole
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # -------------------------------
-# User CRUD (Admin only)
+# User CRUD (Warden only)
 # -------------------------------
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [IsAdminRole]  # only role='ADMIN'
+    permission_classes = [IsWardenRole]  # only role='WARDEN'
 
     def get_queryset(self):
         return User.objects.all()
@@ -22,7 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # anyone can register
 
 
 # -------------------------------

@@ -1,46 +1,59 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from .models import Room, Allocation
 from .serializers import RoomSerializer, AllocationSerializer
 
+# -------------------------------
+# Room CRUD
+# -------------------------------
 class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-
-class AllocationViewSet(viewsets.ModelViewSet):
-    queryset = Allocation.objects.all()
-    serializer_class = AllocationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        """Assign room to the current user if room has availability."""
-        room_id = request.data.get('room')
-        user = request.user
-
-        if not room_id:
-            return Response({"detail": "room field is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            room = Room.objects.get(id=room_id)
-        except Room.DoesNotExist:
-            return Response({"detail": "Room does not exist."}, status=status.HTTP_404_NOT_FOUND)
-
-        if room.is_allocated:
-            return Response({"detail": "Room is already full."}, status=status.HTTP_400_BAD_REQUEST)
-
-        allocation = Allocation.objects.create(
-            student=user,
-            room=room,
-            start_date=request.data.get('start_date')
-        )
-        serializer = self.get_serializer(allocation)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_permissions(self):
+        """
+        Admins: full CRUD
+        Students: read-only
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [perm() for perm in permission_classes]
 
     def get_queryset(self):
-        """Students see only their allocations, admins see all."""
+        user = self.request.user
+        if user.is_staff or user.role == 'ADMIN':
+            return Room.objects.all()
+        else:
+            # Students see only their allocated room
+            allocations = Allocation.objects.filter(student=user, end_date__isnull=True)
+            if allocations.exists():
+                room_ids = [alloc.room.id for alloc in allocations]
+                return Room.objects.filter(id__in=room_ids)
+            else:
+                return Room.objects.none()
+
+
+# -------------------------------
+# Allocation CRUD
+# -------------------------------
+class AllocationViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Students: can only view their own allocations (read-only)
+    Admins: full CRUD (via separate admin interface)
+    """
+    serializer_class = AllocationSerializer
+
+    def get_permissions(self):
+        user = self.request.user
+        if user.is_staff or user.role == 'ADMIN':
+            permission_classes = [permissions.IsAdminUser]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [perm() for perm in permission_classes]
+
+    def get_queryset(self):
         user = self.request.user
         if user.is_staff or user.role == 'ADMIN':
             return Allocation.objects.all()
-        return Allocation.objects.filter(student=user)
+        return Allocation.objects.filter(student=user, end_date__isnull=True)

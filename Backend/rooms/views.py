@@ -1,5 +1,4 @@
 from rest_framework import viewsets, permissions
-from rest_framework.response import Response
 from .models import Room, Allocation
 from .serializers import RoomSerializer, AllocationSerializer
 
@@ -7,6 +6,7 @@ from .serializers import RoomSerializer, AllocationSerializer
 # Room CRUD
 # -------------------------------
 class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all()  # required for router
     serializer_class = RoomSerializer
 
     def get_permissions(self):
@@ -15,9 +15,9 @@ class RoomViewSet(viewsets.ModelViewSet):
         Students: read-only
         """
         if self.action in ['list', 'retrieve']:
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [permissions.IsAuthenticated]  # all authenticated can view
         else:
-            permission_classes = [permissions.IsAdminUser]
+            permission_classes = [permissions.IsAdminUser]  # only admin can create/update/delete
         return [perm() for perm in permission_classes]
 
     def get_queryset(self):
@@ -35,21 +35,22 @@ class RoomViewSet(viewsets.ModelViewSet):
 
 
 # -------------------------------
-# Allocation CRUD
+# Allocation CRUD (read-only for students)
 # -------------------------------
 class AllocationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Students: can only view their own allocations (read-only)
-    Admins: full CRUD (via separate admin interface)
-    """
+    queryset = Allocation.objects.all()  # required for router
     serializer_class = AllocationSerializer
 
     def get_permissions(self):
+        """
+        Admins: full CRUD
+        Students: can only view their own allocations
+        """
         user = self.request.user
         if user.is_staff or user.role == 'ADMIN':
             permission_classes = [permissions.IsAdminUser]
         else:
-            permission_classes = [permissions.IsAuthenticated]
+            permission_classes = [permissions.IsAuthenticated]  # students can view their own allocations
         return [perm() for perm in permission_classes]
 
     def get_queryset(self):

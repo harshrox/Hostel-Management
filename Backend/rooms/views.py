@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import Room, Allocation
 from .serializers import RoomSerializer, AllocationSerializer
-from .permissions import IsAdminRole  # import custom permission
+from .permissions import IsWardenRole
 
 # -------------------------------
 # Room CRUD
@@ -12,18 +12,18 @@ class RoomViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        Admins: full CRUD
+        Warden: full CRUD
         Students: read-only
         """
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]  # all authenticated can view
         else:
-            permission_classes = [IsAdminRole]  # only admin role can create/update/delete
+            permission_classes = [IsWardenRole]  # only warden can create/update/delete
         return [perm() for perm in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'ADMIN':
+        if user.role == 'WARDEN':
             return Room.objects.all()
         else:
             # Students see only their allocated room
@@ -44,17 +44,17 @@ class AllocationViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_permissions(self):
         """
-        Admins: full CRUD (via separate admin interface)
+        Warden: full CRUD (via separate admin interface)
         Students: can only view their own allocations
         """
-        if self.request.user.role == 'ADMIN':
-            permission_classes = [IsAdminRole]
+        if self.request.user.role == 'WARDEN':
+            permission_classes = [IsWardenRole]
         else:
             permission_classes = [permissions.IsAuthenticated]  # students can view only their own allocations
         return [perm() for perm in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'ADMIN':
+        if user.role == 'WARDEN':
             return Allocation.objects.all()
         return Allocation.objects.filter(student=user, end_date__isnull=True)

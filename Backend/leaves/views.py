@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import viewsets, permissions
+from .models import Leave
+from .serializers import LeaveSerializer
 
-# Create your views here.
+class LeaveViewSet(viewsets.ModelViewSet):
+    queryset = Leave.objects.all()
+    serializer_class = LeaveSerializer
+    permission_classes = [permissions.IsAuthenticated]

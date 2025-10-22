@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
-class IsAdminRole(permissions.BasePermission):
+class IsWardenRole(permissions.BasePermission):
     """
-    Allows access only to users with role='ADMIN'
+    Allows access only to users with role='WARDEN'
     """
     def has_permission(self, request, view):
-        return bool(request.user and request.user.role == 'ADMIN')
+        return bool(request.user and request.user.is_authenticated and request.user.role == 'WARDEN')

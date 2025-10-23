@@ -4,6 +4,7 @@ from .serializers import ComplaintSerializer
 from .permissions import IsWardenRole
 
 class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all()  
     serializer_class = ComplaintSerializer
 
     def get_permissions(self):
@@ -18,7 +19,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             if self.action in ['create', 'list', 'retrieve']:
                 permission_classes = [permissions.IsAuthenticated]
             else:
-                permission_classes = [permissions.IsAdminUser]  # no delete/update for students
+                permission_classes = [permissions.IsAuthenticated]  # no update/delete for students
         return [perm() for perm in permission_classes]
 
     def get_queryset(self):

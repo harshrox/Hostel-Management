@@ -10,7 +10,7 @@ import RoomList from "./pages/Warden/Rooms/RoomList";
 import AddRoom from "./pages/Warden/Rooms/AddRoom";
 import AllocationList from "./pages/Warden/Rooms/AllocationList";
 import AddAllocation from "./pages/Warden/Rooms/AddAllocation";
-
+import EditAllocation from "./pages/Warden/Rooms/EditAllocation";
 
 function App() {
   return (
@@ -75,6 +75,14 @@ function App() {
         }
       />
 
+      <Route
+        path="/warden/allocations/edit/:id"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <EditAllocation />
+          </ProtectedRoute>
+        }
+      />
 
 
       {/* Student Routes */}

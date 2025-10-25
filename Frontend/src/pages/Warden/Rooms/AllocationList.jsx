@@ -63,13 +63,20 @@ export default function AllocationList() {
                     <td className="px-4 py-2 border">{a.start_date}</td>
                     <td className="px-4 py-2 border">{a.end_date || "-"}</td>
                     <td className="px-4 py-2 border text-center">
-                      <button
-                        onClick={() => deleteAllocation(a.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
+                        <button
+                            onClick={() => navigate(`/warden/allocations/edit/${a.id}`)}
+                            className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 mr-2"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            onClick={() => deleteAllocation(a.id)}
+                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        >
+                            Delete
+                        </button>
                     </td>
+
                   </tr>
                 ))
               ) : (

@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Users,
   Bed,
+  Home,
   FileWarning,
   LogOut,
   UserCircle,

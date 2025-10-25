@@ -55,23 +55,24 @@ export default function AllocationList() {
               </tr>
             </thead>
             <tbody>
-              {allocations.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{a.student_username}</td>
-                  <td className="px-4 py-2 border">{a.room_number}</td>
-                  <td className="px-4 py-2 border">{a.start_date}</td>
-                  <td className="px-4 py-2 border">{a.end_date || "-"}</td>
-                  <td className="px-4 py-2 border text-center">
-                    <button
-                      onClick={() => deleteAllocation(a.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {allocations.length === 0 && (
+              {allocations.length > 0 ? (
+                allocations.map((a) => (
+                  <tr key={a.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 border">{a.student_username}</td>
+                    <td className="px-4 py-2 border">{a.room_number}</td>
+                    <td className="px-4 py-2 border">{a.start_date}</td>
+                    <td className="px-4 py-2 border">{a.end_date || "-"}</td>
+                    <td className="px-4 py-2 border text-center">
+                      <button
+                        onClick={() => deleteAllocation(a.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
                   <td colSpan="5" className="text-center text-gray-500 py-6">
                     No allocations found

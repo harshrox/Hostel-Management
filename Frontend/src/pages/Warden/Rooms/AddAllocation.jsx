@@ -41,10 +41,11 @@ export default function AddAllocation() {
     if (!selectedStudent || !selectedRoom || !startDate) return;
 
     const payload = {
-      student: selectedStudent.id,
-      room: selectedRoom.id,
-      start_date: startDate,
+        student_id: selectedStudent.id,
+        room_id: selectedRoom.id,
+        start_date: startDate,
     };
+
     console.log("Payload before POST:", payload);
 
     try {

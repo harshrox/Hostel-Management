@@ -86,7 +86,7 @@ export default function Sidebar() {
       </div>
 
       {/* Logout Button */}
-      <div className="border-t border-gray-700 p-3">
+      <div className="border-t border-gray-700 p-3 sticky bottom-0 bg-gray-900">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 w-full text-left hover:bg-gray-700 px-3 py-2 rounded-lg transition-all"
@@ -95,6 +95,7 @@ export default function Sidebar() {
           {open && <span>Logout</span>}
         </button>
       </div>
+
     </div>
   );
 }

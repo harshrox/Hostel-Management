@@ -21,21 +21,23 @@ class RoomSerializer(serializers.ModelSerializer):
 class AllocationSerializer(serializers.ModelSerializer):
     student_id = serializers.IntegerField(write_only=True)
     room_id = serializers.IntegerField(write_only=True)
-    
-    # Read-only fields for the frontend table
+
+    # Read-only fields for frontend
     student_username = serializers.CharField(source="student.username", read_only=True)
     room_number = serializers.CharField(source="room.number", read_only=True)
+    room_type = serializers.CharField(source="room.room_type", read_only=True)
 
     class Meta:
         model = Allocation
         fields = [
-            'id',
-            'student_username',
-            'room_number',
-            'start_date',
-            'end_date',
-            'student_id',
-            'room_id',
+            "id",
+            "student_username",
+            "room_number",
+            "room_type",
+            "start_date",
+            "end_date",
+            "student_id",
+            "room_id",
         ]
 
     def validate(self, attrs):
@@ -63,7 +65,6 @@ class AllocationSerializer(serializers.ModelSerializer):
                 "end_date": "End date cannot be before start date."
             })
 
-        # Update fields
         instance.start_date = start_date
         instance.end_date = end_date
         if 'student_id' in validated_data:

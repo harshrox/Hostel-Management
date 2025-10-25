@@ -50,7 +50,7 @@ export default function HandleComplaints() {
             <tbody>
               {complaints.map((c) => (
                 <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{c.student.username}</td>
+                  <td className="px-4 py-2 border">{c.student.first_name + " " + c.student.last_name}</td>
                   <td className="px-4 py-2 border">{c.title}</td>
                   <td className="px-4 py-2 border">{c.description}</td>
                   <td className="px-4 py-2 border">{c.status}</td>

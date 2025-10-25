@@ -6,6 +6,7 @@ import {
   Users,
   Bed,
   Home,
+  CalendarCheck,
   FileWarning,
   LogOut,
   UserCircle,
@@ -26,6 +27,7 @@ export default function Sidebar() {
     { to: "/warden/users", label: "Users", icon: <Users size={18} /> },
     { to: "/warden/rooms", label: "Rooms", icon: <Bed size={18} /> },
     { to: "/warden/allocations", label: "Allocations", icon: <Home size={18} /> },
+    { to: "/warden/leaves", label: "Leaves", icon: <CalendarCheck size={18} /> },
     { to: "/warden/complaints", label: "Complaints", icon: <FileWarning size={18} /> },
   ];
 

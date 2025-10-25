@@ -18,7 +18,6 @@ export default function MyAllocations() {
     }
   };
 
-  // Format date in IST
   const formatDateIST = (dateStr) => {
     if (!dateStr) return "-";
     const date = new Date(dateStr);
@@ -31,37 +30,47 @@ export default function MyAllocations() {
 
   return (
     <Layout>
-      <div className="p-8 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">My Room Allocation</h1>
+      <div className="bg-gray-900 min-h-screen p-8">
+        <div className="max-w-5xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-2xl">
+          {/* Header */}
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 mb-6">
+            My Room Allocations
+          </h1>
 
-        <div className="bg-white shadow rounded-xl p-6">
-          <table className="min-w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 border">Room Number</th>
-                <th className="px-4 py-2 border">Room Type</th>
-                <th className="px-4 py-2 border">Start Date</th>
-                <th className="px-4 py-2 border">End Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allocations.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{a.room_number}</td>
-                  <td className="px-4 py-2 border">{a.room_type || "-"}</td>
-                  <td className="px-4 py-2 border">{formatDateIST(a.start_date)}</td>
-                  <td className="px-4 py-2 border">{formatDateIST(a.end_date)}</td>
-                </tr>
-              ))}
-              {allocations.length === 0 && (
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-gray-200 border border-gray-700 rounded-xl">
+              <thead className="bg-gray-700 text-gray-100">
                 <tr>
-                  <td colSpan="4" className="text-center text-gray-500 py-6">
-                    No room allocations found
-                  </td>
+                  <th className="px-4 py-3 border-b border-gray-600">Room Number</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Room Type</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Start Date</th>
+                  <th className="px-4 py-3 border-b border-gray-600">End Date</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {allocations.length > 0 ? (
+                  allocations.map((a) => (
+                    <tr
+                      key={a.id}
+                      className="hover:bg-gray-700 transition-all cursor-pointer"
+                    >
+                      <td className="px-4 py-3 border-b border-gray-600">{a.room_number}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{a.room_type || "-"}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{formatDateIST(a.start_date)}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{formatDateIST(a.end_date)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center text-gray-400 py-6 italic">
+                      No room allocations found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </Layout>

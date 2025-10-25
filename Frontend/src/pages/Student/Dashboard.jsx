@@ -28,7 +28,7 @@ export default function StudentDashboard() {
     },
     {
       title: "Profile",
-      description: "View and update your profile information.",
+      description: "View your profile information.",
       icon: <UserCircle size={24} className="text-blue-400" />,
       to: "/profile",
     }

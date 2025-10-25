@@ -21,12 +21,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="bg-gray-900 min-h-screen flex items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-md w-96"
+        className="bg-gray-800 p-8 rounded-2xl shadow-2xl w-96"
       >
-        <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+        <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 mb-6 text-center">
+          Login
+        </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <input
@@ -35,7 +37,7 @@ export default function Login() {
           value={form.username}
           onChange={handleChange}
           placeholder="Username"
-          className="w-full border p-2 mb-3 rounded-md"
+          className="w-full p-3 mb-4 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           required
         />
         <input
@@ -44,13 +46,13 @@ export default function Login() {
           value={form.password}
           onChange={handleChange}
           placeholder="Password"
-          className="w-full border p-2 mb-3 rounded-md"
+          className="w-full p-3 mb-4 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           required
         />
 
         <button
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+          className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition cursor-pointer"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

@@ -47,7 +47,7 @@ export default function WardenDashboard() {
     },
     {
       title: "Profile",
-      description: "View and edit your profile.",
+      description: "View your profile.",
       icon: <UserCircle size={24} className="text-blue-400" />,
       to: "/profile",
     }

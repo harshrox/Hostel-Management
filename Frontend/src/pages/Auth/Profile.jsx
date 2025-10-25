@@ -15,35 +15,39 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-2xl shadow">
-        <h2 className="text-2xl font-semibold mb-4 text-center">My Profile</h2>
+      <div className="bg-gray-900 min-h-screen p-8 flex justify-center items-start">
+        <div className="max-w-md w-full mt-10 bg-gray-800 p-6 rounded-2xl shadow-2xl">
+          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 mb-6 text-center">
+            My Profile
+          </h2>
 
-        <form>
-          {["first_name", "last_name", "username"].map((f) => (
+          <form className="space-y-4">
+            {["first_name", "last_name", "username"].map((f) => (
+              <input
+                key={f}
+                name={f}
+                value={form[f] || ""}
+                readOnly
+                placeholder={f.replace("_", " ").toUpperCase()}
+                className="w-full p-3 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            ))}
+
             <input
-              key={f}
-              name={f}
-              value={form[f] || ""}
+              value={form.role || ""}
               readOnly
-              placeholder={f.replace("_", " ").toUpperCase()}
-              className="w-full border p-2 mb-3 rounded-md bg-gray-100"
+              className="w-full p-3 rounded-xl bg-gray-900 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
-          ))}
 
-          <input
-            value={form.role || ""}
-            readOnly
-            className="w-full border p-2 mb-3 rounded-md bg-gray-200"
-          />
-
-          <button
-            onClick={logout}
-            type="button"
-            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-          >
-            Logout
-          </button>
-        </form>
+            <button
+              onClick={logout}
+              type="button"
+              className="w-full py-3 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition cursor-pointer"
+            >
+              Logout
+            </button>
+          </form>
+        </div>
       </div>
     </Layout>
   );

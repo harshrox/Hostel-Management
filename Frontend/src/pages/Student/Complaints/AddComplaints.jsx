@@ -29,7 +29,7 @@ export default function AddComplaints() {
       await api.post("/complaints/complaints/", { title, description });
       setTitle("");
       setDescription("");
-      fetchComplaints(); // refresh list
+      fetchComplaints();
     } catch (err) {
       console.error("Error submitting complaint:", err.response?.data || err);
       setError("Failed to submit complaint");
@@ -40,82 +40,103 @@ export default function AddComplaints() {
     if (!datetime) return "-";
     const date = new Date(datetime);
     return date.toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata", // ensures IST
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
     });
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "RESOLVED":
+        return "text-green-400";
+      case "IN_PROGRESS":
+        return "text-yellow-400";
+      default:
+        return "text-red-400";
+    }
+  };
 
   return (
     <Layout>
-      <div className="p-8 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-4">My Complaints</h1>
+      <div className="bg-gray-900 min-h-screen p-8">
+        <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-2xl">
+          {/* Header */}
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 mb-6 text-center">
+            Submit a Complaint
+          </h1>
 
-        {/* Complaint Form */}
-        <div className="bg-white shadow rounded-xl p-6 mb-6">
-          {error && <p className="text-red-500 mb-3">{error}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-            <textarea
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded"
-              rows={4}
-              required
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-            >
-              Submit Complaint
-            </button>
-          </form>
-        </div>
+          {/* Complaint Form */}
+          <div className="bg-gray-900 p-6 rounded-2xl mb-6 shadow-inner">
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full p-3 rounded-xl bg-gray-800 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                required
+              />
+              <textarea
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full p-3 rounded-xl bg-gray-800 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                rows={4}
+                required
+              />
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition cursor-pointer"
+              >
+                Submit Complaint
+              </button>
+            </form>
+          </div>
 
-        {/* Complaint List */}
-        <div className="bg-white shadow rounded-xl p-6">
-          <table className="min-w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 border">Title</th>
-                <th className="px-4 py-2 border">Description</th>
-                <th className="px-4 py-2 border">Status</th>
-                <th className="px-4 py-2 border">Created At</th>
-                <th className="px-4 py-2 border">Updated At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {complaints.map((c) => (
-                <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{c.title}</td>
-                  <td className="px-4 py-2 border">{c.description}</td>
-                  <td className="px-4 py-2 border">{c.status}</td>
-                  <td className="px-4 py-2 border">{formatDateTimeIST(c.created_at)}</td>
-                  <td className="px-4 py-2 border">{formatDateTimeIST(c.updated_at)}</td>
-                </tr>
-              ))}
-              {complaints.length === 0 && (
+          {/* Complaint List */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-gray-200 border border-gray-700 rounded-xl">
+              <thead className="bg-gray-700 text-gray-100">
                 <tr>
-                  <td colSpan="5" className="text-center text-gray-500 py-6">
-                    No complaints found
-                  </td>
+                  <th className="px-4 py-3 border-b border-gray-600">Title</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Description</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Status</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Created At</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Updated At</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {complaints.length > 0 ? (
+                  complaints.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="hover:bg-gray-700 transition-all cursor-pointer"
+                    >
+                      <td className="px-4 py-3 border-b border-gray-600">{c.title}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{c.description}</td>
+                      <td className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(c.status)}`}>
+                        {c.status}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">{formatDateTimeIST(c.created_at)}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{formatDateTimeIST(c.updated_at)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center text-gray-400 py-6 italic">
+                      No complaints found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </Layout>

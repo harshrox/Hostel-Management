@@ -21,8 +21,8 @@ export default function HandleComplaints() {
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/complaints/complaints/${id}/`, { status });
-      setComplaints(
-        complaints.map((c) => (c.id === id ? { ...c, status } : c))
+      setComplaints((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status } : c))
       );
     } catch (err) {
       console.error("Error updating complaint:", err);
@@ -33,73 +33,111 @@ export default function HandleComplaints() {
     if (!datetime) return "-";
     const date = new Date(datetime);
     return date.toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata", // ensures IST
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
     });
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "RESOLVED":
+        return "text-green-400";
+      case "IN_PROGRESS":
+        return "text-yellow-400";
+      default:
+        return "text-red-400";
+    }
+  };
 
   return (
     <Layout>
-      <div className="p-8">
-        <div className="max-w-5xl mx-auto bg-white shadow rounded-xl p-6">
-          <h1 className="text-2xl font-semibold mb-6">Complaints</h1>
+      <div className="bg-gray-900 min-h-screen p-8">
+        <div className="max-w-6xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-2xl">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
+              Complaints
+            </h1>
+          </div>
 
-          <table className="min-w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 border">Student</th>
-                <th className="px-4 py-2 border">Title</th>
-                <th className="px-4 py-2 border">Description</th>
-                <th className="px-4 py-2 border">Status</th>
-                <th className="px-4 py-2 border">Created At</th>
-                <th className="px-4 py-2 border">Updated At</th>
-                <th className="px-4 py-2 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {complaints.map((c) => (
-                <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{c.student.first_name + " " + c.student.last_name}</td>
-                  <td className="px-4 py-2 border">{c.title}</td>
-                  <td className="px-4 py-2 border">{c.description}</td>
-                  <td className="px-4 py-2 border">{c.status}</td>
-                  <td className="px-4 py-2 border">{formatDateTimeIST(c.created_at)}</td>
-                  <td className="px-4 py-2 border">{formatDateTimeIST(c.updated_at)}</td>
-                  <td className="px-4 py-2 border text-center space-x-2">
-                    {c.status !== "RESOLVED" && (
-                      <>
-                        <button
-                          onClick={() => updateStatus(c.id, "IN_PROGRESS")}
-                          className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                        >
-                          In Progress
-                        </button>
-                        <button
-                          onClick={() => updateStatus(c.id, "RESOLVED")}
-                          className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                        >
-                          Resolve
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {complaints.length === 0 && (
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-gray-200 border border-gray-700 rounded-xl">
+              <thead className="bg-gray-700 text-gray-100">
                 <tr>
-                  <td colSpan="7" className="text-center text-gray-500 py-6">
-                    No complaints found
-                  </td>
+                  <th className="px-4 py-3 border-b border-gray-600">Student</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Title</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Description</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Status</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Created At</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Updated At</th>
+                  <th className="px-4 py-3 border-b border-gray-600 text-center">Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {complaints.length > 0 ? (
+                  complaints.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="hover:bg-gray-700 transition-all cursor-pointer"
+                    >
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {c.student.first_name + " " + c.student.last_name}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">{c.title}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{c.description}</td>
+                      <td
+                        className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(
+                          c.status
+                        )}`}
+                      >
+                        {c.status}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(c.created_at)}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(c.updated_at)}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600 text-center">
+                        {c.status !== "RESOLVED" && (
+                          <div className="flex justify-center gap-3">
+                            <button
+                              onClick={() => updateStatus(c.id, "IN_PROGRESS")}
+                              className="bg-yellow-500 text-white px-4 py-1.5 rounded-lg hover:bg-yellow-600 transition cursor-pointer"
+                            >
+                              In Progress
+                            </button>
+                            <button
+                              onClick={() => updateStatus(c.id, "RESOLVED")}
+                              className="bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition cursor-pointer"
+                            >
+                              Resolve
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center py-6 text-gray-400 italic"
+                    >
+                      No complaints found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </Layout>

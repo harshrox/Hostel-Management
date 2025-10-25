@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../../services/api";
 import Layout from "../../../components/Layout/Layout";
 
-export default function WardenLeaves() {
+export default function HandleLeaves() {
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
@@ -21,8 +21,8 @@ export default function WardenLeaves() {
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/leaves/leaves/${id}/`, { status });
-      setLeaves(
-        leaves.map((l) => (l.id === id ? { ...l, status } : l))
+      setLeaves((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, status } : l))
       );
     } catch (err) {
       console.error("Error updating leave:", err);
@@ -33,73 +33,108 @@ export default function WardenLeaves() {
     if (!datetime) return "-";
     const date = new Date(datetime);
     return date.toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata", // ensures IST
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
     });
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "APPROVED":
+        return "text-green-400";
+      case "REJECTED":
+        return "text-red-400";
+      default:
+        return "text-yellow-400";
+    }
+  };
 
   return (
     <Layout>
-      <div className="p-8">
-        <div className="max-w-5xl mx-auto bg-white shadow rounded-xl p-6">
-          <h1 className="text-2xl font-semibold mb-6">Leaves</h1>
+      <div className="bg-gray-900 min-h-screen p-8">
+        <div className="max-w-6xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-2xl">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400">
+              Leave Requests
+            </h1>
+          </div>
 
-          <table className="min-w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 border">Student</th>
-                <th className="px-4 py-2 border">Start Date</th>
-                <th className="px-4 py-2 border">End Date</th>
-                <th className="px-4 py-2 border">Reason</th>
-                <th className="px-4 py-2 border">Status</th>
-                <th className="px-4 py-2 border">Applied At</th>
-                <th className="px-4 py-2 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaves.map((l) => (
-                <tr key={l.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{l.student.username}</td>
-                  <td className="px-4 py-2 border">{l.start_date}</td>
-                  <td className="px-4 py-2 border">{l.end_date}</td>
-                  <td className="px-4 py-2 border">{l.reason}</td>
-                  <td className="px-4 py-2 border">{l.status}</td>
-                  <td className="px-4 py-2 border">{formatDateTimeIST(l.applied_at)}</td>
-                  <td className="px-4 py-2 border text-center space-x-2">
-                    {l.status === "PENDING" && (
-                      <>
-                        <button
-                          onClick={() => updateStatus(l.id, "APPROVED")}
-                          className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => updateStatus(l.id, "REJECTED")}
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {leaves.length === 0 && (
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-gray-200 border border-gray-700 rounded-xl">
+              <thead className="bg-gray-700 text-gray-100">
                 <tr>
-                  <td colSpan="7" className="text-center text-gray-500 py-6">
-                    No leaves found
-                  </td>
+                  <th className="px-4 py-3 border-b border-gray-600">Student</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Start Date</th>
+                  <th className="px-4 py-3 border-b border-gray-600">End Date</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Reason</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Status</th>
+                  <th className="px-4 py-3 border-b border-gray-600">Applied At</th>
+                  <th className="px-4 py-3 border-b border-gray-600 text-center">Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {leaves.length > 0 ? (
+                  leaves.map((l) => (
+                    <tr
+                      key={l.id}
+                      className="hover:bg-gray-700 transition-all cursor-pointer"
+                    >
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.student?.username || "-"}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">{l.start_date}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{l.end_date}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">{l.reason}</td>
+                      <td
+                        className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(
+                          l.status
+                        )}`}
+                      >
+                        {l.status}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(l.applied_at)}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600 text-center space-x-2">
+                        {l.status === "PENDING" && (
+                          <>
+                            <button
+                              onClick={() => updateStatus(l.id, "APPROVED")}
+                              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition cursor-pointer"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => updateStatus(l.id, "REJECTED")}
+                              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition cursor-pointer"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center py-6 text-gray-400 italic"
+                    >
+                      No leave requests found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </Layout>

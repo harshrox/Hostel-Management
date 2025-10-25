@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class Room(models.Model):
     ROOM_TYPE = (
@@ -9,20 +10,31 @@ class Room(models.Model):
     )
     number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=10, choices=ROOM_TYPE)
-    capacity = models.IntegerField()
 
     def __str__(self):
         return f"{self.number} ({self.room_type})"
 
     @property
+    def capacity(self):
+        """Derive capacity from room type"""
+        mapping = {
+            'SINGLE': 1,
+            'DOUBLE': 2,
+            'TRIPLE': 3,
+        }
+        return mapping.get(self.room_type, 1)
+
+    @property
     def allocated_count(self):
-        """Number of students currently allocated to this room."""
-        return self.allocation_set.filter(end_date__isnull=True).count()
+        today = timezone.localdate()
+        return self.allocation_set.filter(
+            models.Q(end_date__isnull=True) | models.Q(end_date__gte=today)
+        ).count()
 
     @property
     def is_allocated(self):
-        """Returns True if room is full, False otherwise."""
         return self.allocated_count >= self.capacity
+
 
 class Allocation(models.Model):
     student = models.ForeignKey(

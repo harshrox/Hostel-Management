@@ -19,17 +19,23 @@ class RoomSerializer(serializers.ModelSerializer):
         return obj.is_allocated
 
 
+
+
 class AllocationSerializer(serializers.ModelSerializer):
-    # For read (GET) requests → show full student info
-    student = UserSerializer(read_only=True)
-    # For write (POST/PUT) requests → accept student and room IDs
-    student_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.filter(role='STUDENT'), source='student', write_only=True
-    )
-    room_id = serializers.PrimaryKeyRelatedField(
-        queryset=Room.objects.all(), source='room', write_only=True
-    )
+    student_id = serializers.IntegerField(write_only=True)
+    room_id = serializers.IntegerField(write_only=True)
+    student = serializers.StringRelatedField(read_only=True)
+    room = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Allocation
-        fields = ['id', 'student', 'student_id', 'room', 'room_id', 'start_date', 'end_date']
+        fields = ['id', 'student', 'room', 'start_date', 'end_date', 'student_id', 'room_id']
+
+    def create(self, validated_data):
+        student_id = validated_data.pop('student_id')
+        room_id = validated_data.pop('room_id')
+        student = User.objects.get(id=student_id)
+        room = Room.objects.get(id=room_id)
+        allocation = Allocation.objects.create(student=student, room=room, **validated_data)
+        return allocation
+

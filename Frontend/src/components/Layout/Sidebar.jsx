@@ -46,40 +46,50 @@ export default function Sidebar() {
   };
 
   return (
-    <div className={`flex flex-col ${open ? "w-60" : "w-16"} bg-blue-700 text-white min-h-screen transition-all duration-300`}>
-      <div
-        className="flex items-center justify-between px-4 py-3 border-b border-blue-500 cursor-pointer"
-        onClick={() => setOpen(!open)}
-      >
-        <h1 className={`text-lg font-bold transition-all ${!open && "hidden"}`}>
-          Hostel Management
-        </h1>
-        <button className="p-1 text-blue-100 hover:text-white">
-          {open ? "⟨" : "⟩"}
-        </button>
+    <div
+      className={`flex flex-col justify-between ${
+        open ? "w-64" : "w-16"
+      } bg-linear-to-b from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen transition-all duration-300 shadow-lg`}
+    >
+      {/* Header + Nav */}
+      <div>
+        {/* Sidebar Header */}
+        <div
+          className="flex items-center justify-between px-4 py-3 border-b border-gray-700 cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
+          <h1 className={`text-lg font-bold transition-all ${!open && "hidden"}`}>
+            Hostel Management
+          </h1>
+          <button className="p-1 text-gray-400 hover:text-white">
+            {open ? "⟨" : "⟩"}
+          </button>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="mt-4 flex flex-col gap-1">
+          {links.concat(commonLinks).map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 text-sm rounded-lg transition-all hover:bg-gray-700 ${
+                  isActive ? "bg-gray-700 font-semibold" : ""
+                }`
+              }
+            >
+              {item.icon}
+              {open && <span>{item.label}</span>}
+            </NavLink>
+          ))}
+        </nav>
       </div>
 
-      <nav className="flex-1 mt-2">
-        {links.concat(commonLinks).map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 text-sm hover:bg-blue-600 ${
-                isActive ? "bg-blue-600" : ""
-              }`
-            }
-          >
-            {item.icon}
-            {open && <span>{item.label}</span>}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="border-t border-blue-500 p-3">
+      {/* Logout Button */}
+      <div className="border-t border-gray-700 p-3">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full text-left hover:bg-blue-600 px-3 py-2 rounded"
+          className="flex items-center gap-3 w-full text-left hover:bg-gray-700 px-3 py-2 rounded-lg transition-all"
         >
           <LogOut size={18} />
           {open && <span>Logout</span>}

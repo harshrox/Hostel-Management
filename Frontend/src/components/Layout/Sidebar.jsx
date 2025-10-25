@@ -52,7 +52,7 @@ export default function Sidebar() {
         onClick={() => setOpen(!open)}
       >
         <h1 className={`text-lg font-bold transition-all ${!open && "hidden"}`}>
-          HostelMgmt
+          Hostel Management
         </h1>
         <button className="p-1 text-blue-100 hover:text-white">
           {open ? "⟨" : "⟩"}

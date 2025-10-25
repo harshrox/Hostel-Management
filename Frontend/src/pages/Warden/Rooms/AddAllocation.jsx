@@ -6,11 +6,9 @@ import { useNavigate } from "react-router-dom";
 export default function AddAllocation() {
   const [students, setStudents] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [form, setForm] = useState({
-    student: "",
-    room: "",
-    start_date: "",
-  });
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [startDate, setStartDate] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -38,15 +36,22 @@ export default function AddAllocation() {
     }
   };
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedStudent || !selectedRoom || !startDate) return;
+
+    const payload = {
+      student_id: selectedStudent.id,
+      room_id: selectedRoom.id,
+      start_date: startDate,
+    };
+    console.log("Payload before POST:", payload);
+
     try {
-      await api.post("/rooms/allocations/", form);
+      await api.post("/rooms/allocations/", payload);
       navigate("/warden/allocations");
-    } catch {
+    } catch (err) {
+      console.error("Error creating allocation:", err.response?.data || err);
       setError("Failed to create allocation");
     }
   };
@@ -63,8 +68,12 @@ export default function AddAllocation() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <select
               name="student"
-              value={form.student}
-              onChange={handleChange}
+              value={selectedStudent?.id || ""}
+              onChange={(e) =>
+                setSelectedStudent(
+                  students.find((s) => s.id === parseInt(e.target.value))
+                )
+              }
               className="w-full p-2 border rounded"
               required
             >
@@ -78,8 +87,12 @@ export default function AddAllocation() {
 
             <select
               name="room"
-              value={form.room}
-              onChange={handleChange}
+              value={selectedRoom?.id || ""}
+              onChange={(e) =>
+                setSelectedRoom(
+                  rooms.find((r) => r.id === parseInt(e.target.value))
+                )
+              }
               className="w-full p-2 border rounded"
               required
             >
@@ -94,8 +107,8 @@ export default function AddAllocation() {
             <input
               type="date"
               name="start_date"
-              value={form.start_date}
-              onChange={handleChange}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
               className="w-full p-2 border rounded"
               required
             />

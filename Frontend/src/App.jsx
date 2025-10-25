@@ -11,6 +11,7 @@ import AddRoom from "./pages/Warden/Rooms/AddRoom";
 import AllocationList from "./pages/Warden/Rooms/AllocationList";
 import AddAllocation from "./pages/Warden/Rooms/AddAllocation";
 import EditAllocation from "./pages/Warden/Rooms/EditAllocation";
+import HandleLeaves from "./pages/Warden/Leaves/HandleLeaves";
 
 function App() {
   return (
@@ -80,6 +81,15 @@ function App() {
         element={
           <ProtectedRoute role="WARDEN">
             <EditAllocation />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/warden/leaves"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <HandleLeaves />
           </ProtectedRoute>
         }
       />

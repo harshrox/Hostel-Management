@@ -24,6 +24,7 @@ export default function Sidebar() {
     { to: "/warden/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { to: "/warden/users", label: "Users", icon: <Users size={18} /> },
     { to: "/warden/rooms", label: "Rooms", icon: <Bed size={18} /> },
+    { to: "/warden/allocations", label: "Allocations", icon: <Bed size={18} /> },
     { to: "/warden/complaints", label: "Complaints", icon: <FileWarning size={18} /> },
   ];
 

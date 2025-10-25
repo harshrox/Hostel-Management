@@ -6,6 +6,11 @@ import UserList from "./pages/Warden/Users/UserList";
 import AddUser from "./pages/Warden/Users/AddUser";
 import ProtectedRoute from "./components/Layout/ProtectedRoute";
 import Profile from "./pages/Auth/Profile";
+import RoomList from "./pages/Warden/Rooms/RoomList";
+import AddRoom from "./pages/Warden/Rooms/AddRoom";
+import AllocationList from "./pages/Warden/Rooms/AllocationList";
+import AddAllocation from "./pages/Warden/Rooms/AddAllocation";
+
 
 function App() {
   return (
@@ -35,6 +40,42 @@ function App() {
         path="/warden/users/add"
         element={<ProtectedRoute role="WARDEN"><AddUser /></ProtectedRoute>}
       />
+
+      <Route
+        path="/warden/rooms"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <RoomList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/warden/rooms/add"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <AddRoom />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/warden/allocations"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <AllocationList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/warden/allocations/add"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <AddAllocation />
+          </ProtectedRoute>
+        }
+      />
+
+
 
       {/* Student Routes */}
       <Route

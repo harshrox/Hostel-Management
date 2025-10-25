@@ -36,10 +36,20 @@ export default function AddComplaints() {
     }
   };
 
-  const formatDateTime = (datetime) => {
+  const formatDateTimeIST = (datetime) => {
     if (!datetime) return "-";
-    return new Date(datetime).toLocaleString();
+    const date = new Date(datetime);
+    return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata", // ensures IST
+    });
   };
+
 
   return (
     <Layout>
@@ -93,8 +103,8 @@ export default function AddComplaints() {
                   <td className="px-4 py-2 border">{c.title}</td>
                   <td className="px-4 py-2 border">{c.description}</td>
                   <td className="px-4 py-2 border">{c.status}</td>
-                  <td className="px-4 py-2 border">{formatDateTime(c.created_at)}</td>
-                  <td className="px-4 py-2 border">{formatDateTime(c.updated_at)}</td>
+                  <td className="px-4 py-2 border">{formatDateTimeIST(c.created_at)}</td>
+                  <td className="px-4 py-2 border">{formatDateTimeIST(c.updated_at)}</td>
                 </tr>
               ))}
               {complaints.length === 0 && (

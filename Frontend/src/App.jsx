@@ -14,6 +14,8 @@ import EditAllocation from "./pages/Warden/Rooms/EditAllocation";
 import HandleLeaves from "./pages/Warden/Leaves/HandleLeaves";
 import HandleComplaints from "./pages/Warden/Complaints/HandleComplaints";
 import AddComplaints from "./pages/Student/Complaints/AddComplaints";
+import AddLeaves from "./pages/Student/Leaves/AddLeaves";
+
 
 function App() {
   return (
@@ -117,6 +119,15 @@ function App() {
         element={
           <ProtectedRoute role="STUDENT">
             <AddComplaints />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/student/leaves"
+        element={
+          <ProtectedRoute role="STUDENT">
+            <AddLeaves />
           </ProtectedRoute>
         }
       />

@@ -22,7 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]  # anyone can register
+    permission_classes = [IsWardenRole]  # only role='WARDEN'
 
 
 # -------------------------------

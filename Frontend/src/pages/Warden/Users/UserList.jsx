@@ -5,6 +5,7 @@ import Layout from "../../../components/Layout/Layout";
 
 export default function UserList() {
   const [users, setUsers] = useState([]);
+  const [available, setAvailable] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,8 +16,10 @@ export default function UserList() {
     try {
       const res = await api.get("/accounts/users/");
       setUsers(res.data);
+      setAvailable(true);
     } catch (err) {
       console.error("Error fetching users:", err);
+      setAvailable(false);
     }
   };
 
@@ -65,13 +68,23 @@ export default function UserList() {
                   <td className="px-4 py-3">{`${u.first_name} ${u.last_name}`}</td>
                 </tr>
               ))}
-              {users.length === 0 && (
+              {users.length === 0 && available == false && (
                 <tr>
                   <td
                     colSpan="4"
                     className="text-center text-gray-500 py-6 italic"
                   >
                     No users found.
+                  </td>
+                </tr>
+              )}
+              {users.length === 0 && available == true && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="text-center text-gray-500 py-6 italic"
+                  >
+                    Loading...
                   </td>
                 </tr>
               )}

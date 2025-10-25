@@ -12,6 +12,8 @@ import AllocationList from "./pages/Warden/Rooms/AllocationList";
 import AddAllocation from "./pages/Warden/Rooms/AddAllocation";
 import EditAllocation from "./pages/Warden/Rooms/EditAllocation";
 import HandleLeaves from "./pages/Warden/Leaves/HandleLeaves";
+import HandleComplaints from "./pages/Warden/Complaints/HandleComplaints";
+import AddComplaints from "./pages/Student/Complaints/AddComplaints";
 
 function App() {
   return (
@@ -94,11 +96,29 @@ function App() {
         }
       />
 
+      <Route
+        path="/warden/complaints"
+        element={
+          <ProtectedRoute role="WARDEN">
+            <HandleComplaints />
+          </ProtectedRoute>
+        }
+      />
+
 
       {/* Student Routes */}
       <Route
         path="/student/dashboard"
         element={<ProtectedRoute role="STUDENT"><StudentDashboard /></ProtectedRoute>}
+      />
+
+      <Route
+        path="/student/complaints"
+        element={
+          <ProtectedRoute role="STUDENT">
+            <AddComplaints />
+          </ProtectedRoute>
+        }
       />
 
       {/* Default */}

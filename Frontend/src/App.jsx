@@ -15,6 +15,7 @@ import HandleLeaves from "./pages/Warden/Leaves/HandleLeaves";
 import HandleComplaints from "./pages/Warden/Complaints/HandleComplaints";
 import AddComplaints from "./pages/Student/Complaints/AddComplaints";
 import AddLeaves from "./pages/Student/Leaves/AddLeaves";
+import MyAllocations from "./pages/Student/Rooms/MyAllocations";
 
 
 function App() {
@@ -112,6 +113,15 @@ function App() {
       <Route
         path="/student/dashboard"
         element={<ProtectedRoute role="STUDENT"><StudentDashboard /></ProtectedRoute>}
+      />
+
+      <Route
+        path="/student/rooms"
+        element={
+          <ProtectedRoute role="STUDENT">
+            <MyAllocations />
+          </ProtectedRoute>
+        }
       />
 
       <Route

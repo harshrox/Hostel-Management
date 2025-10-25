@@ -5,11 +5,22 @@ import StudentDashboard from "./pages/Student/Dashboard";
 import UserList from "./pages/Warden/Users/UserList";
 import AddUser from "./pages/Warden/Users/AddUser";
 import ProtectedRoute from "./components/Layout/ProtectedRoute";
+import Profile from "./pages/Auth/Profile";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+
+      {/* Profile Route (any logged-in user) */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Warden Routes */}
       <Route
@@ -32,7 +43,7 @@ function App() {
       />
 
       {/* Default */}
-      <Route path="*" element={<Login />} />
+      <Route path="/" element={<Login />} />
     </Routes>
   );
 }

@@ -1,5 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
+from django.utils import timezone
+from django.db import models
 from .models import Room, Allocation
 from .serializers import RoomSerializer, AllocationSerializer
 from .permissions import IsWardenRole
@@ -20,11 +22,16 @@ class RoomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        today = timezone.localdate()
         if user.role == 'WARDEN':
             return Room.objects.all()
-        # Students see only their allocated room(s)
-        allocations = Allocation.objects.filter(student=user, end_date__isnull=True)
-        room_ids = [alloc.room.id for alloc in allocations]
+        # Students: show only allocations not yet ended
+        allocations = Allocation.objects.filter(
+            student=user
+        ).filter(
+            models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        )
+        room_ids = allocations.values_list('room_id', flat=True)
         return Room.objects.filter(id__in=room_ids)
 
 
@@ -44,9 +51,15 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        today = timezone.localdate()
         if user.role == 'WARDEN':
             return Allocation.objects.select_related('room', 'student')
-        return Allocation.objects.filter(student=user, end_date__isnull=True)
+        # Students: show allocations whose end date is in the future or null
+        return Allocation.objects.filter(
+            student=user
+        ).filter(
+            models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        ).select_related('room')
 
     def create(self, request, *args, **kwargs):
         student_id = request.data.get("student_id")
@@ -60,16 +73,26 @@ class AllocationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Check if student already has an active allocation
-        if Allocation.objects.filter(student_id=student_id, end_date__isnull=True).exists():
+        today = timezone.localdate()
+        # Check if student already has an active allocation (end_date null or in future)
+        if Allocation.objects.filter(
+            student_id=student_id
+        ).filter(
+            models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        ).exists():
             return Response(
                 {"detail": "This student already has an active allocation."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Check if room is full
+        # Check if room is full (only count allocations that are active or future)
         room = Room.objects.get(id=room_id)
-        if room.allocated_count >= room.capacity:
+        active_count = Allocation.objects.filter(
+            room=room
+        ).filter(
+            models.Q(end_date__gte=today) | models.Q(end_date__isnull=True)
+        ).count()
+        if active_count >= room.capacity:
             return Response(
                 {"detail": "This room is already full."},
                 status=status.HTTP_400_BAD_REQUEST

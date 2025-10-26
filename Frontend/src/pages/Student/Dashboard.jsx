@@ -43,7 +43,7 @@ export default function StudentDashboard() {
             Student Dashboard
           </h1>
           <p className="mt-2 text-gray-300 text-lg md:text-xl">
-            Welcome back, {user?.first_name} {user?.last_name}! Explore your rooms, leaves, and complaints below.
+            Welcome back, <span className=" text-fuchsia-500">{user?.first_name}</span>! Explore your rooms, leaves, and complaints below.
           </p>
         </div>
 

@@ -62,7 +62,7 @@ export default function WardenDashboard() {
             Warden Dashboard
           </h1>
           <p className="mt-2 text-gray-300 text-lg md:text-xl">
-            Welcome back, {user?.first_name} {user?.last_name}! Access all the sections below to manage hostel operations efficiently.
+            Welcome back, <span className=" text-fuchsia-500">{user?.first_name}</span>! Access all the sections below to manage hostel operations efficiently.
           </p>
         </div>
 

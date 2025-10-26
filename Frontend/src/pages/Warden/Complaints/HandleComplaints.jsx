@@ -20,14 +20,20 @@ export default function HandleComplaints() {
 
   const updateStatus = async (id, status) => {
     try {
-      await api.patch(`/complaints/complaints/${id}/`, { status });
-      setComplaints((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, status } : c))
-      );
+        const res = await api.patch(`/complaints/complaints/${id}/`, { status });
+        const updatedComplaint = res.data;
+
+        // Update both status and updated_at in local state instantly
+        setComplaints((prev) =>
+        prev.map((c) =>
+            c.id === id ? { ...c, status: updatedComplaint.status, updated_at: updatedComplaint.updated_at } : c
+        )
+        );
     } catch (err) {
-      console.error("Error updating complaint:", err);
+        console.error("Error updating complaint:", err);
     }
   };
+
 
   const formatDateTimeIST = (datetime) => {
     if (!datetime) return "-";

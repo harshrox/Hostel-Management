@@ -8,8 +8,11 @@ export default function AddComplaints() {
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
+  // Fetch complaints initially and every 5 seconds
   useEffect(() => {
     fetchComplaints();
+    const interval = setInterval(fetchComplaints, 5000); // auto-refresh every 5 sec
+    return () => clearInterval(interval); // cleanup when component unmounts
   }, []);
 
   const fetchComplaints = async () => {
@@ -26,10 +29,15 @@ export default function AddComplaints() {
     if (!title || !description) return;
 
     try {
-      await api.post("/complaints/complaints/", { title, description });
+      const res = await api.post("/complaints/complaints/", { title, description });
+      const newComplaint = res.data;
+
+      // Instantly add new complaint to top
+      setComplaints((prev) => [newComplaint, ...prev]);
+
       setTitle("");
       setDescription("");
-      fetchComplaints();
+      setError("");
     } catch (err) {
       console.error("Error submitting complaint:", err.response?.data || err);
       setError("Failed to submit complaint");
@@ -120,16 +128,27 @@ export default function AddComplaints() {
                     >
                       <td className="px-4 py-3 border-b border-gray-600">{c.title}</td>
                       <td className="px-4 py-3 border-b border-gray-600">{c.description}</td>
-                      <td className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(c.status)}`}>
+                      <td
+                        className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(
+                          c.status
+                        )}`}
+                      >
                         {c.status}
                       </td>
-                      <td className="px-4 py-3 border-b border-gray-600">{formatDateTimeIST(c.created_at)}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{formatDateTimeIST(c.updated_at)}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(c.created_at)}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(c.updated_at)}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center text-gray-400 py-6 italic">
+                    <td
+                      colSpan="5"
+                      className="text-center text-gray-400 py-6 italic"
+                    >
                       No complaints found.
                     </td>
                   </tr>

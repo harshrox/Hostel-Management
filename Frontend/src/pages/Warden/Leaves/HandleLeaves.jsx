@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../../../services/api";
 import Layout from "../../../components/Layout/Layout";
 
 export default function HandleLeaves() {
   const [leaves, setLeaves] = useState([]);
+  const intervalRef = useRef(null);
 
+  // Fetch leaves initially and auto-refresh every 5s
   useEffect(() => {
     fetchLeaves();
+
+    intervalRef.current = setInterval(fetchLeaves, 5000);
+    return () => clearInterval(intervalRef.current);
   }, []);
 
   const fetchLeaves = async () => {
@@ -21,9 +26,8 @@ export default function HandleLeaves() {
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/leaves/leaves/${id}/`, { status });
-      setLeaves((prev) =>
-        prev.map((l) => (l.id === id ? { ...l, status } : l))
-      );
+      // Refresh from backend to get accurate full_name + updated data
+      await fetchLeaves();
     } catch (err) {
       console.error("Error updating leave:", err);
     }
@@ -76,9 +80,12 @@ export default function HandleLeaves() {
                   <th className="px-4 py-3 border-b border-gray-600">Reason</th>
                   <th className="px-4 py-3 border-b border-gray-600">Status</th>
                   <th className="px-4 py-3 border-b border-gray-600">Applied At</th>
-                  <th className="px-4 py-3 border-b border-gray-600 text-center">Actions</th>
+                  <th className="px-4 py-3 border-b border-gray-600 text-center">
+                    Actions
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 {leaves.length > 0 ? (
                   leaves.map((l) => (
@@ -87,11 +94,20 @@ export default function HandleLeaves() {
                       className="hover:bg-gray-700 transition-all cursor-pointer"
                     >
                       <td className="px-4 py-3 border-b border-gray-600">
-                        {l.student?.username || "-"}
+                        {l.student?.full_name ||
+                          `${l.student?.first_name || ""} ${l.student?.last_name || ""}`.trim() ||
+                          l.student?.username ||
+                          "-"}
                       </td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.start_date}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.end_date}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.reason}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.start_date}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.end_date}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.reason}
+                      </td>
                       <td
                         className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(
                           l.status
@@ -102,18 +118,18 @@ export default function HandleLeaves() {
                       <td className="px-4 py-3 border-b border-gray-600">
                         {formatDateTimeIST(l.applied_at)}
                       </td>
-                      <td className="px-4 py-3 border-b border-gray-600 text-center space-x-2">
+                      <td className="px-4 py-3 border-b border-gray-600 text-center space-x-3">
                         {l.status === "PENDING" && (
                           <>
                             <button
                               onClick={() => updateStatus(l.id, "APPROVED")}
-                              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition cursor-pointer"
+                              className="bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition cursor-pointer"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => updateStatus(l.id, "REJECTED")}
-                              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition cursor-pointer"
+                              className="bg-red-500 text-white px-4 py-1.5 rounded-lg hover:bg-red-600 transition cursor-pointer"
                             >
                               Reject
                             </button>

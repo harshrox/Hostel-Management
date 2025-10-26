@@ -11,6 +11,13 @@ export default function AddLeaves() {
 
   useEffect(() => {
     fetchLeaves();
+
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(() => {
+      fetchLeaves();
+    }, 5000);
+
+    return () => clearInterval(interval); // cleanup
   }, []);
 
   const fetchLeaves = async () => {
@@ -27,11 +34,15 @@ export default function AddLeaves() {
     if (!startDate || !endDate || !reason) return;
 
     try {
-      await api.post("/leaves/leaves/", { start_date: startDate, end_date: endDate, reason });
+      await api.post("/leaves/leaves/", {
+        start_date: startDate,
+        end_date: endDate,
+        reason,
+      });
       setStartDate("");
       setEndDate("");
       setReason("");
-      fetchLeaves();
+      fetchLeaves(); // refresh list after new leave
     } catch (err) {
       console.error("Error applying leave:", err.response?.data || err);
       setError("Failed to apply leave");
@@ -77,7 +88,9 @@ export default function AddLeaves() {
             {error && <p className="text-red-500 mb-4">{error}</p>}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block mb-1 font-medium text-gray-200">Start Date</label>
+                <label className="block mb-1 font-medium text-gray-200">
+                  Start Date
+                </label>
                 <input
                   type="date"
                   value={startDate}
@@ -88,7 +101,9 @@ export default function AddLeaves() {
               </div>
 
               <div>
-                <label className="block mb-1 font-medium text-gray-200">End Date</label>
+                <label className="block mb-1 font-medium text-gray-200">
+                  End Date
+                </label>
                 <input
                   type="date"
                   value={endDate}
@@ -99,7 +114,9 @@ export default function AddLeaves() {
               </div>
 
               <div>
-                <label className="block mb-1 font-medium text-gray-200">Reason</label>
+                <label className="block mb-1 font-medium text-gray-200">
+                  Reason
+                </label>
                 <textarea
                   placeholder="Reason for leave"
                   value={reason}
@@ -139,19 +156,36 @@ export default function AddLeaves() {
                       key={l.id}
                       className="hover:bg-gray-700 transition-all cursor-pointer"
                     >
-                      <td className="px-4 py-3 border-b border-gray-600">{l.student?.username || "Me"}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.start_date}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.end_date}</td>
-                      <td className="px-4 py-3 border-b border-gray-600">{l.reason}</td>
-                      <td className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(l.status)}`}>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.student?.full_name || "Me"}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.start_date}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.end_date}
+                      </td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {l.reason}
+                      </td>
+                      <td
+                        className={`px-4 py-3 border-b border-gray-600 font-semibold ${getStatusColor(
+                          l.status
+                        )}`}
+                      >
                         {l.status}
                       </td>
-                      <td className="px-4 py-3 border-b border-gray-600">{formatDateTimeIST(l.applied_at)}</td>
+                      <td className="px-4 py-3 border-b border-gray-600">
+                        {formatDateTimeIST(l.applied_at)}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center text-gray-400 py-6 italic">
+                    <td
+                      colSpan="6"
+                      className="text-center text-gray-400 py-6 italic"
+                    >
                       No leaves found.
                     </td>
                   </tr>

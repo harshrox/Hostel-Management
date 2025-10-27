@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'rooms',
     'complaints',
     'leaves',
-    'records',
     'corsheaders'
 ]
 
